@@ -1,0 +1,108 @@
+---
+title: "Homework 1"
+subtitle: "PSTAT Summer 2023"
+date: "Due date: August 18th, 2023"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. The dataset *trees* contains measurements of Girth (tree diameter) in inches, Height in feet, and Volume of timber (in cubic feet) of a sample of 31 felled black cherry trees. The following commands can be used to read the data into R.
+
+
+```{r cereal}
+# the data set "trees" is contained in the R package "datasets"
+require(datasets)
+head(trees,31)
+```
+
+(a) (1pt) Briefly describe the data set trees, i.e., how many observations  (rows) and how many variables (columns) are there in the data set? What are the variable names?
+
+    Data set trees has 31 observations and 3 variables. They name of the variable are Girth, Height and Volume.
+
+
+(b) (2pts) Use the pairs function to construct a scatter plot matrix of the logarithms of Girth, Height and Volume.
+```{r}
+pairs(log(trees))
+```
+
+(c) (2pts) Use the cor function to determine the correlation matrix for the three (logged) variables.
+```{r}
+cor(log(trees))
+```
+  
+(d) (2pts) Are there missing values?
+```{r}
+any(is.na(trees))
+```
+
+
+  No, there are no missing values.
+(e) (2pts) Use the lm function in R to fit the multiple regression model:
+$$log(Volume_i) = \beta_0 + \beta_1 log(Girth_i) + \beta_2 log(Height_i) + \epsilon_i$$
+and print out the summary of the model fit.
+```{r}
+md <- lm(log(Volume) ~ log(Girth) + log(Height), data = trees)
+summary(md)
+```
+
+
+(f) (3pts) Create the design matrix (i.e., the matrix of predictor variables), X, for the model in (e), and verify that the least squares coefficient estimates in the summary output are given by the least squares formula: $\hat\beta = (X^TX)^{-1}X^Ty$.
+```{r}
+x = model.matrix(md)
+x
+
+beta_hat = solve(t(x) %*% x) %*% t(x) %*% log(trees$Volume)
+beta_hat
+```
+
+(g) (3pts) Compute the predicted response valuvalues from the fitted regression model, the residuals, and an estimate of the error variance $Var(\epsilon) = \sigma^2$.
+```{r}
+predicted = predict(md)
+
+residual = residuals(md)
+
+error_var = (sum(residual^2)) / (length(residual)-2)
+
+
+list(predicted, residual, error_var)
+```
+
+
+2. Consider the simple linear regression model:
+$$y_i=\beta_0 + \beta_1x_i + \epsilon_i$$
+**Part 1:** $\beta_0=0$
+(a) (3pts) Assume $\beta_0=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
+
+beta_0=0 means the y intercept of this line is 0. When x=0, the value of y    should be 0, so this line will pass through the origin (0,0). This regression
+line plot should be a straight line that starts at (0,0) and the slope of     this line according to the beat_1.
+
+(b) (4pts) Derive the LS estimate of $\beta_1$ when $\beta_0=0$.
+
+beat_1 = (sum(x-mean(x)*(y-mean(y))))/(sum((x-mean*(x))^2))
+
+(c) (3pts) How can we introduce this assumption within the lm function?\
+
+lm(y~x, intercept = 0)
+  
+
+\
+**Part 2:** $\beta_1=0$\
+(d) (3pts) For the same model, assume $\beta_1=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
+
+beta_1=0 means x and y do not have linear relationship. The implication of this regression line is that this line will be a horizontal line with y intercept at beat_0. This regression line plot should be a horizontal line that has y intercept according to the value of beta_0.
+
+(e) (4pts) Derive the LS estimate of $\beta_0$ when $\beta_1=0$.
+
+beta_0 =  mean(y) - beat_1*mean(x), where beat_1 = 0
+
+(f) (3pts) How can we introduce this assumption within the lm function?
+
+lm(y~0+x)
+
+3. Consider the simple linear regression model:
+$$y_i = \beta_0 + \beta_1x_i + \epsilon_i$$
+(a) (10pts) Use the LS estimation general result $\hat\beta = (X^TX)^{-1}X^Ty$ to find the explicit estimates for $\beta_0$ and $\beta_1$.
+(b) (5pts) Show that the LS estimates $\hat\beta_0$ and $\hat\beta_1$ are unbiased estimates for $\beta_0$ and $\beta_1$ respectively.

@@ -66,8 +66,8 @@ residual = residuals(md)
 
 error_var = (sum(residual^2)) / (length(residual)-2)
 
+list(predicted = predicted, residual = residual, error_var = error_var)
 
-list(predicted, residual, error_var)
 ```
 
 
@@ -76,8 +76,7 @@ $$y_i=\beta_0 + \beta_1x_i + \epsilon_i$$
 **Part 1:** $\beta_0=0$
 (a) (3pts) Assume $\beta_0=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
 
-beta_0=0 means the y intercept of this line is 0. When x=0, the value of y    should be 0, so this line will pass through the origin (0,0). This regression
-line plot should be a straight line that starts at (0,0) and the slope of     this line according to the beat_1.
+$\beta_0=0$ means the y intercept of this line is 0. When x=0, the value of y    should be 0, so this line will pass through the origin (0,0). This regression line plot should be a straight line that starts at (0,0) and the slope of this line according to the $\beta_1=0$.
 
 (b) (4pts) Derive the LS estimate of $\beta_1$ when $\beta_0=0$.
 
@@ -92,7 +91,7 @@ lm(y~x, intercept = 0)
 **Part 2:** $\beta_1=0$\
 (d) (3pts) For the same model, assume $\beta_1=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
 
-beta_1=0 means x and y do not have linear relationship. The implication of this regression line is that this line will be a horizontal line with y intercept at beat_0. This regression line plot should be a horizontal line that has y intercept according to the value of beta_0.
+$\beta_1=0$ means x and y do not have linear relationship. The implication of this regression line is that this line will be a horizontal line with y intercept at beat_0. This regression line plot should be a horizontal line that has y intercept according to the value of $\beta_0=0$.
 
 (e) (4pts) Derive the LS estimate of $\beta_0$ when $\beta_1=0$.
 

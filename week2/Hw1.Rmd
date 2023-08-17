@@ -15,12 +15,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r cereal}
 # the data set "trees" is contained in the R package "datasets"
 require(datasets)
-head(trees,31)
+head(trees)
 ```
 
 (a) (1pt) Briefly describe the data set trees, i.e., how many observations  (rows) and how many variables (columns) are there in the data set? What are the variable names?
 
-    Data set trees has 31 observations and 3 variables. They name of the variable are Girth, Height and Volume.
+```{r}
+nrow(trees)
+ncol(trees)
+colnames(trees)
+
+```
+
+
+Data set trees has 31 observations and 3 variables. They name of the variable are Girth, Height and Volume.
 
 
 (b) (2pts) Use the pairs function to construct a scatter plot matrix of the logarithms of Girth, Height and Volume.
@@ -43,6 +51,7 @@ any(is.na(trees))
 (e) (2pts) Use the lm function in R to fit the multiple regression model:
 $$log(Volume_i) = \beta_0 + \beta_1 log(Girth_i) + \beta_2 log(Height_i) + \epsilon_i$$
 and print out the summary of the model fit.
+
 ```{r}
 md <- lm(log(Volume) ~ log(Girth) + log(Height), data = trees)
 summary(md)
@@ -52,7 +61,6 @@ summary(md)
 (f) (3pts) Create the design matrix (i.e., the matrix of predictor variables), X, for the model in (e), and verify that the least squares coefficient estimates in the summary output are given by the least squares formula: $\hat\beta = (X^TX)^{-1}X^Ty$.
 ```{r}
 x = model.matrix(md)
-x
 
 beta_hat = solve(t(x) %*% x) %*% t(x) %*% log(trees$Volume)
 beta_hat
@@ -64,10 +72,10 @@ predicted = predict(md)
 
 residual = residuals(md)
 
-error_var = (sum(residual^2)) / (length(residual)-2)
+error_var = (sum(residual^2)) / (length(residual)-3)
 
-list(predicted = predicted, residual = residual, error_var = error_var)
 
+list(predicted = predicted, residual =  residual, error_var = error_var)
 ```
 
 
@@ -76,32 +84,68 @@ $$y_i=\beta_0 + \beta_1x_i + \epsilon_i$$
 **Part 1:** $\beta_0=0$
 (a) (3pts) Assume $\beta_0=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
 
-$\beta_0=0$ means the y intercept of this line is 0. When x=0, the value of y    should be 0, so this line will pass through the origin (0,0). This regression line plot should be a straight line that starts at (0,0) and the slope of this line according to the $\beta_1=0$.
+beta_0=0 means the y intercept of this line is 0. When x=0, the value of y    should be 0, so this line will pass through the origin (0,0). This regression line plot should be a straight line that starts at (0,0) and the slope of this line according to the beat_1.
 
 (b) (4pts) Derive the LS estimate of $\beta_1$ when $\beta_0=0$.
 
-beat_1 = (sum(x-mean(x)*(y-mean(y))))/(sum((x-mean*(x))^2))
+$SSR = \sum_{i=1}^{n}(y_i-\hat{y})^2\\$
+$SSR = \sum_{i=1}^{n}(y_i-\hat{\beta_0}-\hat{\beta_1}x_i)^2\\\hat{\beta_0}=0\\$
+$\frac{dSSR}{d\hat{\beta_1}}=\sum_{i=1}^{n}-2(y_i-\hat{\beta_1}x_i)\\\sum_{i=1}^{n}-2(y_i-\hat{\beta_1}x_i)=0\\\hat{\beta_1}\sum_{i=1}^{n}x_i^2 =\sum_{i=1}^{n} y_ix_i\\\hat{\beta_1}=\sum_{i=1}^{n}\frac{y_ix_i}{x_i^2}$
 
 (c) (3pts) How can we introduce this assumption within the lm function?\
 
-lm(y~x, intercept = 0)
+lm(y~x-1)
   
 
 \
 **Part 2:** $\beta_1=0$\
 (d) (3pts) For the same model, assume $\beta_1=0$. What is the interpretation of this assumption? What is the implication on the regression line? What does the regression line plot look like?
 
-$\beta_1=0$ means x and y do not have linear relationship. The implication of this regression line is that this line will be a horizontal line with y intercept at beat_0. This regression line plot should be a horizontal line that has y intercept according to the value of $\beta_0=0$.
+beta_1=0 means x and y do not have linear relationship. The implication of this regression line is that this line will be a horizontal line with y intercept at beat_0. This regression line plot should be a horizontal line that has y intercept according to the value of beta_0.
 
 (e) (4pts) Derive the LS estimate of $\beta_0$ when $\beta_1=0$.
 
-beta_0 =  mean(y) - beat_1*mean(x), where beat_1 = 0
+$SSR = \sum_{i=1}^{n}(y_i-\hat{y})^2\\$
+$SSR = \sum_{i=1}^{n}(y_i-\hat{\beta_0}-\hat{\beta_1}x_i)^2\\\hat{\beta_1}=0\\$
+$\frac{dSSR}{d\hat{\beta_1}}=\sum_{i=1}^{n}-2(y_i-\hat{\beta_0})$
+$\sum_{i=1}^{n}-2(y_i-\hat{\beta_0}) = 0 \\ \sum_{i=1}^{n}(y_i-\hat{\beta_0}) = 0 \\ n\hat{\beta_0} = n\bar{y}\\$
+$\hat{\beta_0} = \bar{y}$
 
 (f) (3pts) How can we introduce this assumption within the lm function?
 
-lm(y~0+x)
+lm(y~0+x) 
+
 
 3. Consider the simple linear regression model:
 $$y_i = \beta_0 + \beta_1x_i + \epsilon_i$$
 (a) (10pts) Use the LS estimation general result $\hat\beta = (X^TX)^{-1}X^Ty$ to find the explicit estimates for $\beta_0$ and $\beta_1$.
+
+$X = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_n \end{bmatrix}$
+$y = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix}\\$
+$X^T = \begin{bmatrix} 1 & 1 & \dots & 1 \\ x_1 & x_2 & \dots & x_n \end{bmatrix}\\$
+$X^TX = \begin{bmatrix} n & \sum_{i=1}^{n}x_i \\ \sum_{i=1}^{n}x_i & \sum_{i=1}^{n}x_i^2 \end{bmatrix}\\$
+$X^T y = \begin{bmatrix}\sum_{i=1}^{n} y_i \\\sum_{i=1}^{n} x_i y_i \\\end{bmatrix}\\$
+$(X^T X)^{-1} = \frac{1}{n \sum_{i=1}^{n} x_i^2 - (\sum_{i=1}^{n} x_i)^2}\begin{bmatrix}\sum_{i=1}^{n} x_i^2 & -\sum_{i=1}^{n} x_i\\-\sum_{i=1}^{n} x_i & n \\\end{bmatrix}\\$
+$\hat{\beta}= \frac{1}{n \sum_{i=1}^{n} x_i^2 - (\sum_{i=1}^{n} x_i)^2}\begin{bmatrix}\sum_{i=1}^{n} x_i^2 & -\sum_{i=1}^{n} x_i\\-\sum_{i=1}^{n} x_i & n \\\end{bmatrix}\begin{bmatrix}\sum_{i=1}^{n} y_i \\\sum_{i=1}^{n} x_i y_i \\\end{bmatrix}\\$
+$\hat{\beta_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}\\$
+$\hat{\beta_0} = \bar{y} - \hat{\beta_1}\bar{x}$
+
 (b) (5pts) Show that the LS estimates $\hat\beta_0$ and $\hat\beta_1$ are unbiased estimates for $\beta_0$ and $\beta_1$ respectively.
+$\\\text{For } \hat{\beta_1}\\$
+$\hat{\beta_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}\\$
+$Sxx = {\sum_{i=1}^{n} (x_i - \bar{x})^2} = {\sum_{i=1}^{n} (x_i - \bar{x})xi}\\$
+$\hat{\beta_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{Sxx}=\frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i)(x_i - \bar{x}) - \bar{y})}{Sxx}\\\sum_{i=1}^{n} (x_i - \bar{x})=0\\$
+$\hat{\beta_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i)}{Sxx}\\$
+$E(\hat{\beta_1}) = E( \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i)}{Sxx})=\frac{\sum_{i=1}^{n} (x_i - \bar{x})E((y_i))}{Sxx}$
+$=\frac{\sum_{i=1}^{n} (x_i - \bar{x})(\beta_0+\beta_1xi)}{Sxx}\\$
+$E(\hat{\beta_1}) = \beta_0\frac{\sum_{i=1}^{n} (x_i - \bar{x})}{Sxx}+ \beta_1\frac{\sum_{i=1}^{n} (x_i - \bar{x})xi}{Sxx}\\$
+$E(\hat{\beta_1}) =0+\beta_1\frac{Sxx}{Sxx}=\beta_1$
+$\text{ Therefor, it is unbiased.} \\$
+
+$\text{For } \hat{\beta_0}\\$
+$\hat{\beta_0} = \bar{y} - \hat{\beta_1}\bar{x}\\$
+$E(\bar{y})=E(\frac{1}{n}\sum_{i=1}^{n}y_i)=\beta_0+\beta_1\bar{x}\\$
+$E(\hat{\beta_0})=E(\bar{y} - \hat{\beta_1}\bar{x})=E(\bar{y})-\bar{x}E(\hat{\beta_1})$
+$E(\hat{\beta_0})=\beta_0+\beta_1\bar{x}-\bar{x}\beta_1=\beta_0$
+$\text{ Therefor, it is unbiased.} \\$
+
